@@ -1,0 +1,113 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Vector;
+
+public class BookManagementSystem {
+    private JFrame frame;
+    private JTable table;
+    private DefaultTableModel model;
+
+    public BookManagementSystem() {
+        frame = new JFrame("Book Management System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 400);
+        frame.setLayout(new BorderLayout());
+
+
+        model = new DefaultTableModel();
+        model.setColumnIdentifiers(new String[]{"Title", "Author", "ISBN", "Price"});
+        table = new JTable(model);
+
+        JScrollPane tableScrollPane = new JScrollPane(table);
+
+        
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("Add Book");
+        JButton updateButton = new JButton("Update Book");
+        JButton deleteButton = new JButton("Delete Book");
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(updateButton);
+        buttonPanel.add(deleteButton);
+
+        frame.add(tableScrollPane, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        addButton.addActionListener(e -> addBook());
+        updateButton.addActionListener(e -> updateBook());
+        deleteButton.addActionListener(e -> deleteBook());
+
+        frame.setVisible(true);
+    }
+
+    private void addBook() {
+        JTextField titleField = new JTextField();
+        JTextField authorField = new JTextField();
+        JTextField isbnField = new JTextField();
+        JTextField priceField = new JTextField();
+
+        Object[] fields = {
+            "Title:", titleField,
+            "Author:", authorField,
+            "ISBN:", isbnField,
+            "Price:", priceField
+        };
+
+        int option = JOptionPane.showConfirmDialog(frame, fields, "Add Book", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            model.addRow(new Object[]{
+                titleField.getText(),
+                authorField.getText(),
+                isbnField.getText(),
+                priceField.getText()
+            });
+        }
+    }
+
+    private void updateBook() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select a book to update.");
+            return;
+        }
+
+        JTextField titleField = new JTextField(model.getValueAt(selectedRow, 0).toString());
+        JTextField authorField = new JTextField(model.getValueAt(selectedRow, 1).toString());
+        JTextField isbnField = new JTextField(model.getValueAt(selectedRow, 2).toString());
+        JTextField priceField = new JTextField(model.getValueAt(selectedRow, 3).toString());
+
+        Object[] fields = {
+            "Title:", titleField,
+            "Author:", authorField,
+            "ISBN:", isbnField,
+            "Price:", priceField
+        };
+
+        int option = JOptionPane.showConfirmDialog(frame, fields, "Update Book", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            model.setValueAt(titleField.getText(), selectedRow, 0);
+            model.setValueAt(authorField.getText(), selectedRow, 1);
+            model.setValueAt(isbnField.getText(), selectedRow, 2);
+            model.setValueAt(priceField.getText(), selectedRow, 3);
+        }
+    }
+
+    private void deleteBook() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select a book to delete.");
+            return;
+        }
+
+        int option = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete this book?", "Delete Book", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION) {
+            model.removeRow(selectedRow);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(BookManagementSystem::new);
+    }
+}
